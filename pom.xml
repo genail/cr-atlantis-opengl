@@ -19,6 +19,13 @@
     <url>http://graniec.pl/</url>
     
     <dependencies>
+
+        <!-- Atlantis -->
+        <dependency>
+            <groupId>pl.graniec</groupId>
+            <artifactId>cr-atlantis</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
     
         <!-- JUnit -->
         <dependency>
