@@ -31,6 +31,7 @@ package pl.graniec.atlantis.opengl;
 import javax.media.opengl.GL;
 
 import pl.graniec.atlantis.Graphics;
+import pl.graniec.atlantis.animation.Color;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
@@ -49,14 +50,14 @@ public class GLGraphics implements Graphics {
 	}
 	
 	public final void setColor(int color) {
-		context.glColor4f((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, (color >> 24) & 0xFF);
+		context.glColor4f(Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color));
 	}
 
 	/* (non-Javadoc)
 	 * @see pl.graniec.atlantis.Graphics#clear(int)
 	 */
 	public void clear(int color) {
-		
+		context.glClearColor(Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color));
 	}
 	
 }

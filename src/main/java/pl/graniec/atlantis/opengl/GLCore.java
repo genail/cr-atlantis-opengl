@@ -66,12 +66,4 @@ public class GLCore extends Core {
 	public FilledRect newFilledRect() {
 		return new GLFilledRect();
 	}
-
-	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Core#newGraphics()
-	 */
-	@Override
-	public Graphics newGraphics() {
-	}
-
 }

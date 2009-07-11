@@ -82,25 +82,51 @@ public class GLWindow implements Window {
 		canvas.addGLEventListener(new GLEventListener() {
 			
 			public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-				glu.gluOrtho2D(0, width, height, 0);
+				
+				GL func = drawable.getGL();
+				
+				func.glMatrixMode(GL.GL_PROJECTION);
+				func.glLoadIdentity();
+				glu.gluOrtho2D(0, canvas.getWidth(), canvas.getHeight(), 0);
+				func.glMatrixMode(GL.GL_MODELVIEW);
 			}
 			
 			public void init(GLAutoDrawable drawable) {
+				
 				GL func = drawable.getGL();
+				
+				func.glMatrixMode(GL.GL_PROJECTION);
+				func.glLoadIdentity();
 				glu.gluOrtho2D(0, canvas.getWidth(), canvas.getHeight(), 0);
+				func.glMatrixMode(GL.GL_MODELVIEW);
+
 				
 				func.glShadeModel(GL.GL_SMOOTH);
-				func.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+				func.glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
 				func.glClearDepth(1.0f);
+				
+				func.glEnable(GL.GL_BLEND);
+				func.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 			}
 			
 			public void displayChanged(GLAutoDrawable arg0, boolean arg1, boolean arg2) {
 			}
 			
 			public void display(GLAutoDrawable drawable) {
-				Stage.repaintStage(new GLGraphics(drawable.getGL()));
+				
+				final GL func = drawable.getGL();
+				
+				func.glClear(GL.GL_COLOR_BUFFER_BIT);
+				func.glClear(GL.GL_DEPTH_BUFFER_BIT);
+				
+				func.glLoadIdentity();
+				
+				Stage.repaintStage(new GLGraphics(func));
+
 			}
 		});
+		
+		canvas.requestFocus();
 	}
 	
 	/* (non-Javadoc)
