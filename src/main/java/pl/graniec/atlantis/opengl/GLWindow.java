@@ -40,8 +40,15 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 
 import pl.graniec.atlantis.DisplayMode;
+import pl.graniec.atlantis.Graphics;
 import pl.graniec.atlantis.Stage;
 import pl.graniec.atlantis.Window;
+import pl.graniec.atlantis.opengl.effects.Shader;
+import sun.misc.Cleaner;
+
+import com.sun.opengl.util.Animator;
+import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureCoords;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
@@ -62,15 +69,23 @@ public class GLWindow implements Window {
 	/** OpenGL Canvas */
 	private final GLCanvas canvas = new GLCanvas();
 	
+	/** OpenGL animator */
+	private final Animator animator = new Animator(canvas);
+	
 	/** AWT Frame */
 	private final GLFrame frame = new GLFrame();
 	
 	/** GLU */
 	private final GLU glu = new GLU();
 	
+	FrameBuffer fb;
+	Shader shader;
+	
+	
 	public GLWindow() {
 		frame.add(canvas);
 		setDisplayMode(DEFAULT_DISPLAY_MODE);
+		frame.setResizable(false);
 		
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -81,52 +96,69 @@ public class GLWindow implements Window {
 		
 		canvas.addGLEventListener(new GLEventListener() {
 			
-			public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-				
-				GL func = drawable.getGL();
-				
-				func.glMatrixMode(GL.GL_PROJECTION);
-				func.glLoadIdentity();
-				glu.gluOrtho2D(0, canvas.getWidth(), canvas.getHeight(), 0);
-				func.glMatrixMode(GL.GL_MODELVIEW);
-			}
-			
-			public void init(GLAutoDrawable drawable) {
-				
-				GL func = drawable.getGL();
-				
-				func.glMatrixMode(GL.GL_PROJECTION);
-				func.glLoadIdentity();
-				glu.gluOrtho2D(0, canvas.getWidth(), canvas.getHeight(), 0);
-				func.glMatrixMode(GL.GL_MODELVIEW);
-
-				
-				func.glShadeModel(GL.GL_SMOOTH);
-				func.glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
-				func.glClearDepth(1.0f);
-				
-				func.glEnable(GL.GL_BLEND);
-				func.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+			public void display(GLAutoDrawable drawable) {
+				GLWindow.this.display(drawable.getGL());
 			}
 			
 			public void displayChanged(GLAutoDrawable arg0, boolean arg1, boolean arg2) {
 			}
 			
-			public void display(GLAutoDrawable drawable) {
-				
-				final GL func = drawable.getGL();
-				
-				func.glClear(GL.GL_COLOR_BUFFER_BIT);
-				func.glClear(GL.GL_DEPTH_BUFFER_BIT);
-				
-				func.glLoadIdentity();
-				
-				Stage.repaintStage(new GLGraphics(func));
-
+			public void init(GLAutoDrawable drawable) {
+				GLWindow.this.init(drawable.getGL());
+			}
+			
+			public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+				GLWindow.this.reshape(drawable.getGL(), x, y, width, height);
 			}
 		});
 		
 		canvas.requestFocus();
+		animator.start();
+	}
+	
+	private void display(GL gl) {
+		fb.bind(gl);
+		
+		gl.glLoadIdentity();
+		
+		final Graphics g = new GLGraphics(gl, canvas.getWidth(), canvas.getHeight());
+		g.clear(0x22FF0000);
+		Stage.repaintStage(g);
+		
+		fb.unbind(gl);
+		
+		g.clear(0xFF000077);
+		
+		Texture tex = fb.getTexture();
+//		tex.enable();
+//		tex.bind();
+		
+		shader.setUniformInt("inputTexture", fb.getTexture().getTextureObject());
+		shader.useProgram();
+		
+		TextureCoords coords = new TextureCoords(0, 0, 1, 1);
+		
+		gl.glColor3f(1, 1, 1);
+		
+		gl.glBegin(GL.GL_QUADS);
+		
+		gl.glTexCoord2f(coords.left(), coords.top());
+		gl.glVertex2f(10, 10);
+		
+		gl.glTexCoord2f(coords.left(), coords.bottom());
+		gl.glVertex2f(10, 200);
+		
+		gl.glTexCoord2f(coords.right(), coords.bottom());
+		gl.glVertex2f(200, 200);
+		
+		gl.glTexCoord2f(coords.right(), coords.top());
+		gl.glVertex2f(200, 10);
+		
+		gl.glEnd();
+		
+		shader.unuseProgram();
+		
+		tex.disable();
 	}
 	
 	/* (non-Javadoc)
@@ -134,6 +166,38 @@ public class GLWindow implements Window {
 	 */
 	public DisplayMode[] getAvailableDisplayModes() {
 		return new DisplayMode[] { DEFAULT_DISPLAY_MODE };
+	}
+	
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.Window#getTitle()
+	 */
+	public String getTitle() {
+		return frame.getTitle();
+	}
+	
+	private void init(GL gl) {
+		gl.glMatrixMode(GL.GL_PROJECTION);
+		gl.glLoadIdentity();
+		glu.gluOrtho2D(0, canvas.getWidth(), canvas.getHeight(), 0);
+		gl.glMatrixMode(GL.GL_MODELVIEW);
+
+		
+		gl.glShadeModel(GL.GL_SMOOTH);
+		gl.glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
+		gl.glClearDepth(1.0f);
+		
+		gl.glEnable(GL.GL_BLEND);
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		
+		fb = new FrameBuffer(gl, canvas.getWidth(), canvas.getHeight());
+		shader = new Shader(gl, "color_invert");
+	}
+
+	private void reshape(GL gl, int x, int y, int width, int height) {
+		gl.glMatrixMode(GL.GL_PROJECTION);
+		gl.glLoadIdentity();
+		glu.gluOrtho2D(0, canvas.getWidth(), canvas.getHeight(), 0);
+		gl.glMatrixMode(GL.GL_MODELVIEW);
 	}
 
 	/* (non-Javadoc)
@@ -145,24 +209,17 @@ public class GLWindow implements Window {
 	}
 
 	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Window#show()
-	 */
-	public void show() {
-		frame.setVisible(true);
-	}
-
-	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Window#getTitle()
-	 */
-	public String getTitle() {
-		return frame.getTitle();
-	}
-
-	/* (non-Javadoc)
 	 * @see pl.graniec.atlantis.Window#setTitle(java.lang.String)
 	 */
 	public void setTitle(String title) {
 		frame.setTitle(title);
+	}
+
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.Window#show()
+	 */
+	public void show() {
+		frame.setVisible(true);
 	}
 
 }

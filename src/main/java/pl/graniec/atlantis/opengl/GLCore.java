@@ -34,7 +34,9 @@ import pl.graniec.atlantis.Core;
 import pl.graniec.atlantis.Graphics;
 import pl.graniec.atlantis.Window;
 import pl.graniec.atlantis.drawables.FilledRect;
+import pl.graniec.atlantis.effects.ColorInvert;
 import pl.graniec.atlantis.opengl.drawables.GLFilledRect;
+import pl.graniec.atlantis.opengl.effects.GLColorInvert;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
@@ -65,5 +67,13 @@ public class GLCore extends Core {
 	@Override
 	public FilledRect newFilledRect() {
 		return new GLFilledRect();
+	}
+
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.Core#newColorInvert()
+	 */
+	@Override
+	public ColorInvert newColorInvert() {
+		return new GLColorInvert();
 	}
 }

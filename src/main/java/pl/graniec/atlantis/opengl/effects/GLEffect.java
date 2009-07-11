@@ -26,52 +26,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package pl.graniec.atlantis.opengl.drawables;
-
-import javax.media.opengl.GL;
-
-import pl.graniec.atlantis.Graphics;
-import pl.graniec.atlantis.drawables.FilledRect;
-import pl.graniec.atlantis.opengl.GLGraphics;
+package pl.graniec.atlantis.opengl.effects;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class GLFilledRect extends FilledRect {
-
-	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Drawable#draw(pl.graniec.atlantis.Graphics)
-	 */
-	@Override
-	public void draw(Graphics g) {
-		final GLGraphics glg = (GLGraphics) g;
-		final GL gl = glg.getContext();
-		
-//		final Effect[] effectStack = getEffectStack();
-//		
-//		FrameBuffer fb = new FrameBuffer(gl, g.getWidth(), g.getHeight());
-//		fb.bind(gl);
-		
-//		g.clear(0);
-		
-		gl.glBegin(GL.GL_QUADS);
-		
-		glg.setColor(fillColor.get());
-		
-		final double x1 = this.x.get();
-		final double y1 = this.y.get();
-		final double x2 = x1 + width.get();
-		final double y2 = y1 + height.get();
-		
-		gl.glVertex2d(x1, y1);
-		gl.glVertex2d(x1, y2);
-		gl.glVertex2d(x2, y2);
-		gl.glVertex2d(x2, y1);
-		
-		gl.glEnd();
-		
-//		fb.unbind(gl);
-	}
-
+public interface GLEffect {
+	void load();
+	void unload();
 }

@@ -50,8 +50,12 @@ public class TestMain {
 		@Override
 		public void load() {
 			rect = Core.getCurrent().newFilledRect();
-			rect.setFillColor(0x660000FF);
+			rect.setFillColor(0xFFFF00FF);
 			rect.setGeometry(10, 10, 200, 100);
+			
+			rect.x.animate(10, 400, 5000);
+			rect.y.animate(10, 400, 5000);
+			rect.fillColor.animate(0xFFFFFF00, 0x00FFF00, 5000);
 			
 			add(rect);
 		}

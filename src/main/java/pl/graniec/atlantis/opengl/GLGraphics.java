@@ -40,9 +40,15 @@ import pl.graniec.atlantis.animation.Color;
 public class GLGraphics implements Graphics {
 	
 	private final GL context;
+	
+	private final int width;
+	
+	private final int height;
 
-	public GLGraphics(GL context) {
+	public GLGraphics(GL context, int width, int height) {
 		this.context = context;
+		this.width = width;
+		this.height = height;
 	}
 	
 	public GL getContext() {
@@ -58,6 +64,21 @@ public class GLGraphics implements Graphics {
 	 */
 	public void clear(int color) {
 		context.glClearColor(Color.red(color), Color.green(color), Color.blue(color), Color.alpha(color));
+		context.glClear(GL.GL_COLOR_BUFFER_BIT);
+	}
+
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.Graphics#getHeight()
+	 */
+	public int getHeight() {
+		return height;
+	}
+
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.Graphics#getWidth()
+	 */
+	public int getWidth() {
+		return width;
 	}
 	
 }
