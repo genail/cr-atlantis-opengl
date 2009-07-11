@@ -117,48 +117,11 @@ public class GLWindow implements Window {
 	}
 	
 	private void display(GL gl) {
-		fb.bind(gl);
-		
 		gl.glLoadIdentity();
 		
 		final Graphics g = new GLGraphics(gl, canvas.getWidth(), canvas.getHeight());
-		g.clear(0x22FF0000);
+		g.clear(0xFF000000);
 		Stage.repaintStage(g);
-		
-		fb.unbind(gl);
-		
-		g.clear(0xFF000077);
-		
-		Texture tex = fb.getTexture();
-//		tex.enable();
-//		tex.bind();
-		
-		shader.setUniformInt("inputTexture", fb.getTexture().getTextureObject());
-		shader.useProgram();
-		
-		TextureCoords coords = new TextureCoords(0, 0, 1, 1);
-		
-		gl.glColor3f(1, 1, 1);
-		
-		gl.glBegin(GL.GL_QUADS);
-		
-		gl.glTexCoord2f(coords.left(), coords.top());
-		gl.glVertex2f(10, 10);
-		
-		gl.glTexCoord2f(coords.left(), coords.bottom());
-		gl.glVertex2f(10, 200);
-		
-		gl.glTexCoord2f(coords.right(), coords.bottom());
-		gl.glVertex2f(200, 200);
-		
-		gl.glTexCoord2f(coords.right(), coords.top());
-		gl.glVertex2f(200, 10);
-		
-		gl.glEnd();
-		
-		shader.unuseProgram();
-		
-		tex.disable();
 	}
 	
 	/* (non-Javadoc)

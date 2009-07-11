@@ -1,10 +1,3 @@
-import pl.graniec.atlantis.Core;
-import pl.graniec.atlantis.Scene;
-import pl.graniec.atlantis.Stage;
-import pl.graniec.atlantis.Window;
-import pl.graniec.atlantis.drawables.FilledRect;
-import pl.graniec.atlantis.opengl.GLCore;
-
 /**
  * Copyright (c) 2009, Coral Reef Project
  * All rights reserved.
@@ -33,48 +26,86 @@ import pl.graniec.atlantis.opengl.GLCore;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package pl.graniec.atlantis.opengl.effects;
+
+import javax.media.opengl.GL;
+
+import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureCoords;
+
+import pl.graniec.atlantis.opengl.FrameBuffer;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class TestMain {
-	
-	private static class MyScene extends Scene {
+public class EffectFrameBuffer {
 
-		FilledRect rect;
+	/** Static instance of this class */
+	private static final EffectFrameBuffer instance = new EffectFrameBuffer();
+	
+	public static EffectFrameBuffer getInstance() {
+		return instance;
+	}
+	
+	/** Two framebuffers for shader rendering */
+	private FrameBuffer source, target;
+	
+	/** Is target binded? */
+	private boolean targetBinded;
+	
+	private EffectFrameBuffer() {
+	}
+	
+	public void bind(GL gl) {
+		target.bind(gl);
+		targetBinded = true;
+	}
+	
+	public void dispose() {
+		// FIXME: Make a call from proper place
+		if (source != null) {
+			source.dispose();
+			target.dispose();
+		}
+	}
+	
+	public Texture getSourceTexture() {
+		return source.getTexture();
+	}
+	
+	public TextureCoords getSourceTextureCoords() {
+		return source.getTextureCoords();
+	}
+	
+	public void rebuild(GL gl, int width, int height) {
 		
-		/* (non-Javadoc)
-		 * @see pl.graniec.atlantis.Scene#load()
-		 */
-		@Override
-		public void load() {
-			rect = Core.getCurrent().newFilledRect();
-			rect.setFillColor(0xFFFFFFFF);
-			rect.setGeometry(10, 10, 200, 100);
+		if (source != null && (source.getWidth() != width || source.getHeight() != height)) {
+			source.dispose();
+			target.dispose();
 			
-			rect.x.animate(10, 400, 5000);
-			rect.y.animate(10, 400, 5000);
-			rect.fillColor.animate(0xFFFF0000, 0xFF0000FF, 5000);
-			
-			rect.addEffect(Core.getCurrent().newColorInvert());
-			
-			add(rect);
+			source = null;
+			target = null;
 		}
 		
+		if (source == null) {
+			source = new FrameBuffer(gl, width, height);
+			target = new FrameBuffer(gl, width, height);
+		}
 	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		final Core core = new GLCore();
-		final Window window = core.newWindow();
-		window.setTitle("Test");
-		window.show();
+	
+	public void swap() {
+		if (targetBinded) {
+			throw new RuntimeException("target is still binded");
+		}
 		
-		final Scene scene = new MyScene();
-		Stage.setScene(scene);
+		final FrameBuffer temp = source;
+		source = target;
+		target = temp;
 	}
-
+	
+	public void unbind(GL gl) {
+		target.unbind(gl);
+		targetBinded = false;
+	}
 }

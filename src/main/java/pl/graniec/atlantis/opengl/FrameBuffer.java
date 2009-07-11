@@ -34,6 +34,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GLContext;
 
 import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureCoords;
 import com.sun.opengl.util.texture.TextureIO;
 
 /**
@@ -42,6 +43,9 @@ import com.sun.opengl.util.texture.TextureIO;
  */
 public class FrameBuffer {
 	
+	/** Standard texture coordinates */
+	private static final TextureCoords TEXTURE_COORDS = new TextureCoords(0, 0, 1, 1);
+
 	/** OpenGL texture sizes */
 	private final static int[] TEX_SIZES = {
 		2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4092
@@ -52,11 +56,19 @@ public class FrameBuffer {
 	
 	/** Texture that stores frame buffer */
 	private final Texture texture;
+
+	/** Logical texture width */
+	private final int width;
+	/** Logical texture height */
+	private final int height;
 	
 	/**
 	 * 
 	 */
 	public FrameBuffer(GL gl, int width, int height) {
+		
+		this.width = width;
+		this.height = height;
 		
 		// calculate texture size
 		int[] wh = toOpenGLDimension(width, height);
@@ -99,6 +111,10 @@ public class FrameBuffer {
 		return texture;
 	}
 	
+	public TextureCoords getTextureCoords() {
+		return TEXTURE_COORDS;
+	}
+	
 	private int[] toOpenGLDimension(int w, int h) {
 		
 		for (int s : TEX_SIZES) {
@@ -120,5 +136,19 @@ public class FrameBuffer {
 	
 	public void unbind(GL gl) {
 		gl.glBindFramebufferEXT(GL.GL_FRAMEBUFFER_EXT, 0);
+	}
+	
+	/**
+	 * @return the width
+	 */
+	public int getWidth() {
+		return width;
+	}
+	
+	/**
+	 * @return the height
+	 */
+	public int getHeight() {
+		return height;
 	}
 }

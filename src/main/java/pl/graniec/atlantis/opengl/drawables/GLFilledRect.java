@@ -30,9 +30,16 @@ package pl.graniec.atlantis.opengl.drawables;
 
 import javax.media.opengl.GL;
 
+import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureCoords;
+
 import pl.graniec.atlantis.Graphics;
+import pl.graniec.atlantis.Stage;
 import pl.graniec.atlantis.drawables.FilledRect;
+import pl.graniec.atlantis.effects.Effect;
 import pl.graniec.atlantis.opengl.GLGraphics;
+import pl.graniec.atlantis.opengl.effects.EffectFrameBuffer;
+import pl.graniec.atlantis.opengl.effects.GLEffect;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
@@ -48,7 +55,14 @@ public class GLFilledRect extends FilledRect {
 		final GLGraphics glg = (GLGraphics) g;
 		final GL gl = glg.getContext();
 		
-//		final Effect[] effectStack = getEffectStack();
+		final Effect[] effectStack = getEffectStack();
+		EffectFrameBuffer efb = EffectFrameBuffer.getInstance();
+		
+		if (effectStack.length > 0) {
+			efb.rebuild(gl, g.getWidth(), g.getHeight());
+			efb.bind(gl);
+			g.clear(0);
+		}
 //		
 //		FrameBuffer fb = new FrameBuffer(gl, g.getWidth(), g.getHeight());
 //		fb.bind(gl);
@@ -72,6 +86,62 @@ public class GLFilledRect extends FilledRect {
 		gl.glEnd();
 		
 //		fb.unbind(gl);
+		
+		if (effectStack.length > 0) {
+			efb.unbind(gl);
+			processEffects(glg, efb, effectStack);
+		}
+	}
+
+	/**
+	 * @param effectStack
+	 */
+	private void processEffects(GLGraphics g, EffectFrameBuffer efb, Effect[] effectStack) {
+		
+		final GL gl = g.getContext();
+		GLEffect gle;
+		
+		int i = 0;
+		for (Effect e : effectStack) {
+			
+			gle = (GLEffect) e;
+			
+			if (i + 1 < effectStack.length) {
+				efb.swap();
+				efb.bind(gl);
+				g.clear(0);
+			}
+			
+			final Texture texture = efb.getSourceTexture();
+			final TextureCoords coords = efb.getSourceTextureCoords();
+			
+			gle.load(gl, texture.getTextureObject());
+			
+			gl.glBegin(GL.GL_QUADS);
+			gl.glColor3f(1, 1, 1);
+			
+			gl.glTexCoord2f(coords.left(), coords.top());
+			gl.glVertex2i(0, 0);
+			
+			gl.glTexCoord2f(coords.left(), coords.bottom());
+			gl.glVertex2i(0, Stage.getHeight() - 1);
+			
+			gl.glTexCoord2f(coords.right(), coords.bottom());
+			gl.glVertex2i(Stage.getWidth() - 1, Stage.getHeight() - 1);
+			
+			gl.glTexCoord2f(coords.right(), coords.top());
+			gl.glVertex2i(Stage.getWidth() - 1, 0);
+			
+			gl.glEnd();
+			
+			gle.unload(gl);
+			
+			if (i + 1 < effectStack.length) {
+				efb.unbind(gl);
+			}
+			
+			++i;
+		}
 	}
 
 }

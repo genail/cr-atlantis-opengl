@@ -28,6 +28,8 @@
  */
 package pl.graniec.atlantis.opengl.effects;
 
+import javax.media.opengl.GL;
+
 import pl.graniec.atlantis.effects.ColorInvert;
 
 /**
@@ -35,11 +37,19 @@ import pl.graniec.atlantis.effects.ColorInvert;
  *
  */
 public class GLColorInvert extends ColorInvert implements GLEffect {
-	public void load() {
+	
+	private Shader shader;
+	
+	public void load(GL gl, int sourceTexture) {
+		if (shader == null) {
+			shader = new Shader(gl, "color_invert");
+		}
 		
+		shader.setUniformInt("sourceTexture", sourceTexture);
+		shader.useProgram();
 	}
 	
-	public void unload() {
-		
+	public void unload(GL gl) {
+		shader.unuseProgram();
 	}
 }

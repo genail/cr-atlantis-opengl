@@ -28,11 +28,13 @@
  */
 package pl.graniec.atlantis.opengl.effects;
 
+import javax.media.opengl.GL;
+
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
 public interface GLEffect {
-	void load();
-	void unload();
+	void load(GL gl, int sourceTexture);
+	void unload(GL gl);
 }

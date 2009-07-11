@@ -28,10 +28,7 @@
  */
 package pl.graniec.atlantis.opengl;
 
-import javax.media.opengl.GLContext;
-
 import pl.graniec.atlantis.Core;
-import pl.graniec.atlantis.Graphics;
 import pl.graniec.atlantis.Window;
 import pl.graniec.atlantis.drawables.FilledRect;
 import pl.graniec.atlantis.effects.ColorInvert;
@@ -54,11 +51,11 @@ public class GLCore extends Core {
 	}
 	
 	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Core#newWindow()
+	 * @see pl.graniec.atlantis.Core#newColorInvert()
 	 */
 	@Override
-	public Window newWindow() {
-		return new GLWindow();
+	public ColorInvert newColorInvert() {
+		return new GLColorInvert();
 	}
 
 	/* (non-Javadoc)
@@ -70,10 +67,10 @@ public class GLCore extends Core {
 	}
 
 	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Core#newColorInvert()
+	 * @see pl.graniec.atlantis.Core#newWindow()
 	 */
 	@Override
-	public ColorInvert newColorInvert() {
-		return new GLColorInvert();
+	public Window newWindow() {
+		return new GLWindow();
 	}
 }
