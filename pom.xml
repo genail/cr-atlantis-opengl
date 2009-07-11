@@ -26,7 +26,7 @@
             <artifactId>cr-atlantis</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
-    
+        
         <!-- JUnit -->
         <dependency>
             <groupId>junit</groupId>
