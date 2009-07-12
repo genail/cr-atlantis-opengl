@@ -120,7 +120,7 @@ public class GLWindow implements Window {
 		gl.glLoadIdentity();
 		
 		final Graphics g = new GLGraphics(gl, canvas.getWidth(), canvas.getHeight());
-		g.clear(0xFF000000);
+//		g.clear(0xFF00FFFFs);
 		Stage.repaintStage(g);
 	}
 	

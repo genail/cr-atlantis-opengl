@@ -54,20 +54,11 @@ public class GLFilledRect extends FilledRect {
 	public void draw(Graphics g) {
 		final GLGraphics glg = (GLGraphics) g;
 		final GL gl = glg.getContext();
+		final Effect[] effects = getEffectStack();
 		
-		final Effect[] effectStack = getEffectStack();
-		EffectFrameBuffer efb = EffectFrameBuffer.getInstance();
-		
-		if (effectStack.length > 0) {
-			efb.rebuild(gl, g.getWidth(), g.getHeight());
-			efb.bind(gl);
-			g.clear(0);
-		}
-//		
-//		FrameBuffer fb = new FrameBuffer(gl, g.getWidth(), g.getHeight());
-//		fb.bind(gl);
-		
-//		g.clear(0);
+		preDraw(glg, effects);
+
+		// actual drawing
 		
 		gl.glBegin(GL.GL_QUADS);
 		
@@ -85,19 +76,40 @@ public class GLFilledRect extends FilledRect {
 		
 		gl.glEnd();
 		
-//		fb.unbind(gl);
 		
-		if (effectStack.length > 0) {
-			efb.unbind(gl);
-			processEffects(glg, efb, effectStack);
+		postDraw(glg, effects);
+	}
+	
+	private void preDraw(GLGraphics g, Effect[] effects) {
+		if (effects.length > 0) {
+			final EffectFrameBuffer efb = EffectFrameBuffer.getInstance();
+			final GL gl = g.getContext();
+			
+			efb.rebuild(gl, g.getWidth(), g.getHeight());
+			efb.bind(gl);
+			
+			// make the framebuffer clean
+			g.clear(0);
 		}
+	}
+	
+	private void postDraw(GLGraphics g, Effect[] effects) {
+		if (effects.length > 0) {
+			final EffectFrameBuffer efb = EffectFrameBuffer.getInstance();
+			final GL gl = g.getContext();
+			
+			efb.unbind(gl);
+			processEffects(g, effects);
+		}
+		
 	}
 
 	/**
 	 * @param effectStack
 	 */
-	private void processEffects(GLGraphics g, EffectFrameBuffer efb, Effect[] effectStack) {
+	private void processEffects(GLGraphics g, Effect[] effectStack) {
 		
+		final EffectFrameBuffer efb = EffectFrameBuffer.getInstance();
 		final GL gl = g.getContext();
 		GLEffect gle;
 		
@@ -106,8 +118,9 @@ public class GLFilledRect extends FilledRect {
 			
 			gle = (GLEffect) e;
 			
+			efb.swap();
+			
 			if (i + 1 < effectStack.length) {
-				efb.swap();
 				efb.bind(gl);
 				g.clear(0);
 			}

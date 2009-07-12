@@ -26,61 +26,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package pl.graniec.atlantis.opengl;
+package pl.graniec.atlantis.opengl.effects;
 
-import pl.graniec.atlantis.Core;
-import pl.graniec.atlantis.Window;
-import pl.graniec.atlantis.drawables.FilledRect;
+import javax.media.opengl.GL;
+
 import pl.graniec.atlantis.effects.ColorDesaturate;
-import pl.graniec.atlantis.effects.ColorInvert;
-import pl.graniec.atlantis.opengl.drawables.GLFilledRect;
-import pl.graniec.atlantis.opengl.effects.GLColorDesaturate;
-import pl.graniec.atlantis.opengl.effects.GLColorInvert;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class GLCore extends Core {
+public class GLColorDesaturate extends ColorDesaturate implements GLEffect {
 
-	/**
-	 * Creates a OpenGL Core implementation.
-	 */
-	public GLCore() {
-		if (Core.getCurrent() == null) {
-			makeCurrent();
-		}
+	private final GLEffectBasic basic = new GLEffectBasic("color_desaturate");
+	
+	public void load(GL gl, int sourceTexture) {
+		basic.load(gl, sourceTexture);
 	}
 	
-	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Core#newColorInvert()
-	 */
-	@Override
-	public ColorInvert newColorInvert() {
-		return new GLColorInvert();
+	public void unload(GL gl) {
+		basic.unload(gl);
 	}
 
-	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Core#newFilledRect()
-	 */
-	@Override
-	public FilledRect newFilledRect() {
-		return new GLFilledRect();
-	}
-
-	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Core#newWindow()
-	 */
-	@Override
-	public Window newWindow() {
-		return new GLWindow();
-	}
-
-	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Core#newColorDesaturate()
-	 */
-	@Override
-	public ColorDesaturate newColorDesaturate() {
-		return new GLColorDesaturate();
-	}
 }

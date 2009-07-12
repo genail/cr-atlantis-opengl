@@ -1,4 +1,5 @@
 import pl.graniec.atlantis.Core;
+import pl.graniec.atlantis.Graphics;
 import pl.graniec.atlantis.Scene;
 import pl.graniec.atlantis.Stage;
 import pl.graniec.atlantis.Window;
@@ -49,7 +50,14 @@ public class TestMain {
 		 */
 		@Override
 		public void load() {
-			rect = Core.getCurrent().newFilledRect();
+			
+			final Core core = Core.getCurrent();
+			
+			final FilledRect fill = core.newFilledRect();
+			fill.setFillColor(0x03000000);
+			add(fill);
+			
+			rect = core.newFilledRect();
 			rect.setFillColor(0xFFFFFFFF);
 			rect.setGeometry(10, 10, 200, 100);
 			
@@ -58,6 +66,7 @@ public class TestMain {
 			rect.fillColor.animate(0xFFFF0000, 0xFF0000FF, 5000);
 			
 			rect.addEffect(Core.getCurrent().newColorInvert());
+			rect.addEffect(Core.getCurrent().newColorDesaturate());
 			
 			add(rect);
 		}

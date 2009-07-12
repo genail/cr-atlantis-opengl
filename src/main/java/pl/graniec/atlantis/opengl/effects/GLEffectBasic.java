@@ -26,61 +26,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package pl.graniec.atlantis.opengl;
+package pl.graniec.atlantis.opengl.effects;
 
-import pl.graniec.atlantis.Core;
-import pl.graniec.atlantis.Window;
-import pl.graniec.atlantis.drawables.FilledRect;
-import pl.graniec.atlantis.effects.ColorDesaturate;
-import pl.graniec.atlantis.effects.ColorInvert;
-import pl.graniec.atlantis.opengl.drawables.GLFilledRect;
-import pl.graniec.atlantis.opengl.effects.GLColorDesaturate;
-import pl.graniec.atlantis.opengl.effects.GLColorInvert;
+import javax.media.opengl.GL;
+import javax.media.opengl.GLContext;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class GLCore extends Core {
+public class GLEffectBasic implements GLEffect {
 
-	/**
-	 * Creates a OpenGL Core implementation.
-	 */
-	public GLCore() {
-		if (Core.getCurrent() == null) {
-			makeCurrent();
-		}
-	}
+	/** Shader of this effect */
+	Shader shader;
 	
-	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Core#newColorInvert()
-	 */
-	@Override
-	public ColorInvert newColorInvert() {
-		return new GLColorInvert();
+	public GLEffectBasic(String shaderName) {
+		shader = new Shader(GLContext.getCurrent().getGL(), shaderName);
 	}
 
 	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Core#newFilledRect()
+	 * @see pl.graniec.atlantis.opengl.effects.GLEffect#load(javax.media.opengl.GL, int)
 	 */
-	@Override
-	public FilledRect newFilledRect() {
-		return new GLFilledRect();
+	public void load(GL gl, int sourceTexture) {
+		shader.setUniformInt("sourceTexture", sourceTexture);
+		shader.useProgram();
 	}
 
 	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Core#newWindow()
+	 * @see pl.graniec.atlantis.opengl.effects.GLEffect#unload(javax.media.opengl.GL)
 	 */
-	@Override
-	public Window newWindow() {
-		return new GLWindow();
+	public void unload(GL gl) {
+		shader.unuseProgram();
 	}
 
-	/* (non-Javadoc)
-	 * @see pl.graniec.atlantis.Core#newColorDesaturate()
-	 */
-	@Override
-	public ColorDesaturate newColorDesaturate() {
-		return new GLColorDesaturate();
-	}
 }

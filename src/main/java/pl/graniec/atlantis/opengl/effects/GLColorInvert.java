@@ -38,18 +38,13 @@ import pl.graniec.atlantis.effects.ColorInvert;
  */
 public class GLColorInvert extends ColorInvert implements GLEffect {
 	
-	private Shader shader;
+	private final GLEffectBasic basic = new GLEffectBasic("color_invert");
 	
 	public void load(GL gl, int sourceTexture) {
-		if (shader == null) {
-			shader = new Shader(gl, "color_invert");
-		}
-		
-		shader.setUniformInt("sourceTexture", sourceTexture);
-		shader.useProgram();
+		basic.load(gl, sourceTexture);
 	}
 	
 	public void unload(GL gl) {
-		shader.unuseProgram();
+		basic.unload(gl);
 	}
 }
