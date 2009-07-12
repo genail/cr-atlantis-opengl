@@ -124,13 +124,13 @@ public class GLFilledRect extends FilledRect {
 			gl.glVertex2i(0, 0);
 			
 			gl.glTexCoord2f(coords.left(), coords.bottom());
-			gl.glVertex2i(0, Stage.getHeight() - 1);
+			gl.glVertex2i(0, Stage.getHeight());
 			
 			gl.glTexCoord2f(coords.right(), coords.bottom());
-			gl.glVertex2i(Stage.getWidth() - 1, Stage.getHeight() - 1);
+			gl.glVertex2i(Stage.getWidth(), Stage.getHeight());
 			
 			gl.glTexCoord2f(coords.right(), coords.top());
-			gl.glVertex2i(Stage.getWidth() - 1, 0);
+			gl.glVertex2i(Stage.getWidth(), 0);
 			
 			gl.glEnd();
 			

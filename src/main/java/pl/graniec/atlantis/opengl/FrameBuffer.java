@@ -43,9 +43,6 @@ import com.sun.opengl.util.texture.TextureIO;
  */
 public class FrameBuffer {
 	
-	/** Standard texture coordinates */
-	private static final TextureCoords TEXTURE_COORDS = new TextureCoords(0, 0, 1, 1);
-
 	/** OpenGL texture sizes */
 	private final static int[] TEX_SIZES = {
 		2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4092
@@ -57,10 +54,14 @@ public class FrameBuffer {
 	/** Texture that stores frame buffer */
 	private final Texture texture;
 
-	/** Logical texture width */
-	private final int width;
-	/** Logical texture height */
-	private final int height;
+	/** Logical texture width and height */
+	private final int width, height;
+	
+	/** Real texture width and height */
+	private final int rwidth, rheight;
+	
+	/** Texture coordinates */
+	private final TextureCoords coords;
 	
 	/**
 	 * 
@@ -72,8 +73,8 @@ public class FrameBuffer {
 		
 		// calculate texture size
 		int[] wh = toOpenGLDimension(width, height);
-		width = wh[0];
-		height = wh[1];
+		rwidth = wh[0];
+		rheight = wh[1];
 		
 		// create a framebuffer object
 		final IntBuffer intBuffer = IntBuffer.allocate(1);
@@ -85,7 +86,7 @@ public class FrameBuffer {
     	texture.bind();
     	texture.setTexParameteri(GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
     	texture.setTexParameteri(GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-    	gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, 4,  width, height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, null);
+    	gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, 4,  rwidth, rheight, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, null);
 		
     	bind(gl);
     	
@@ -93,6 +94,9 @@ public class FrameBuffer {
     	gl.glFramebufferTexture2DEXT(GL.GL_FRAMEBUFFER_EXT, GL.GL_COLOR_ATTACHMENT0_EXT, GL.GL_TEXTURE_2D, texture.getTextureObject(), 0);
     	
     	unbind(gl);
+    	
+    	// calculate texture coords
+    	coords = new TextureCoords(0, 0, (float) width / (float) rwidth, (float) height / (float) rheight);
 	}
 	
 	public void bind(GL gl) {
@@ -112,7 +116,7 @@ public class FrameBuffer {
 	}
 	
 	public TextureCoords getTextureCoords() {
-		return TEXTURE_COORDS;
+		return coords;
 	}
 	
 	private int[] toOpenGLDimension(int w, int h) {
