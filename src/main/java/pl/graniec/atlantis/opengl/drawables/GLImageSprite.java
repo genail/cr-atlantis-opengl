@@ -28,19 +28,55 @@
  */
 package pl.graniec.atlantis.opengl.drawables;
 
-import javax.media.opengl.GL;
+import java.io.IOException;
+import java.util.logging.Logger;
 
+import javax.media.opengl.GL;
+import javax.media.opengl.GLException;
+
+import pl.graniec.atlantis.Build;
+import pl.graniec.atlantis.EMessage;
 import pl.graniec.atlantis.Graphics;
-import pl.graniec.atlantis.drawables.FilledRect;
+import pl.graniec.atlantis.Utils;
+import pl.graniec.atlantis.drawables.ImageSprite;
 import pl.graniec.atlantis.effects.Effect;
 import pl.graniec.atlantis.opengl.GLGraphics;
+
+import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureCoords;
+import com.sun.opengl.util.texture.TextureIO;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class GLFilledRect extends FilledRect {
+public class GLImageSprite extends ImageSprite {
+	
+	private static final Logger logger = Logger.getLogger(GLImageSprite.class.getName());
 
+	/** Texture used to keep the image */
+	private Texture texture;
+	
+	public GLImageSprite(String path) {
+		
+		try {
+			texture = TextureIO.newTexture(Utils.pathToUrl(path), true, "png");
+			
+			width.set(texture.getWidth());
+			height.set(texture.getHeight());
+			
+		} catch (GLException e) {
+			if (Build.DEBUG) {
+				logger.severe(EMessage.prepare("cannot load image", e));
+			}
+		} catch (IOException e) {
+			if (Build.DEBUG) {
+				logger.severe(EMessage.prepare("cannot load image", e));
+			}
+		}
+		
+	}
+	
 	/* (non-Javadoc)
 	 * @see pl.graniec.atlantis.Drawable#draw(pl.graniec.atlantis.Graphics)
 	 */
@@ -49,30 +85,42 @@ public class GLFilledRect extends FilledRect {
 		final GLGraphics glg = (GLGraphics) g;
 		final GL gl = glg.getContext();
 		final Effect[] effects = getEffectStack();
+		final TextureCoords coords = texture.getImageTexCoords();
 		
 		GLDrawHelper.preDraw(glg, effects);
-
-		// actual drawing
-		
-		gl.glBegin(GL.GL_QUADS);
-		
-		// FIXME: make 'alpha' field usable here
-		glg.setColor(fillColor.get());
 		
 		final double x1 = this.x.get();
 		final double y1 = this.y.get();
 		final double x2 = x1 + width.get();
 		final double y2 = y1 + height.get();
+
+		// actual drawing
 		
+		texture.enable();
+		texture.bind();
+		
+		
+		glg.setColor(0x00FFFFFF + (alpha.get() << 24));
+		
+		gl.glBegin(GL.GL_QUADS);
+		
+		gl.glTexCoord2f(coords.left(), coords.top());
 		gl.glVertex2d(x1, y1);
+		
+		gl.glTexCoord2f(coords.left(), coords.bottom());
 		gl.glVertex2d(x1, y2);
+		
+		gl.glTexCoord2f(coords.right(), coords.bottom());
 		gl.glVertex2d(x2, y2);
+		
+		gl.glTexCoord2f(coords.right(), coords.top());
 		gl.glVertex2d(x2, y1);
 		
 		gl.glEnd();
 		
+		texture.disable();
 		
 		GLDrawHelper.postDraw(glg, effects);
 	}
-	
+
 }

@@ -29,7 +29,9 @@
 package pl.graniec.atlantis.opengl.effects;
 
 import javax.media.opengl.GL;
-import javax.media.opengl.GLContext;
+
+import pl.graniec.atlantis.Stage;
+import pl.graniec.atlantis.opengl.effects.shaders.Shader;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
@@ -40,15 +42,16 @@ public class GLEffectBasic implements GLEffect {
 	/** Shader of this effect */
 	Shader shader;
 	
-	public GLEffectBasic(String shaderName) {
-		shader = new Shader(GLContext.getCurrent().getGL(), shaderName);
+	public GLEffectBasic(Class<? extends Shader> shaderClass) {
+//		shader = new Shader(GLContext.getCurrent().getGL(), shaderName);
+		shader = ShaderCache.getInstance().getShader(shaderClass);
 	}
 
 	/* (non-Javadoc)
 	 * @see pl.graniec.atlantis.opengl.effects.GLEffect#load(javax.media.opengl.GL, int)
 	 */
-	public void load(GL gl, int sourceTexture) {
-		shader.setUniformInt("sourceTexture", sourceTexture);
+	public void load(GL gl) {
+		shader.setUniformInt("inputTexture", 0);
 		shader.useProgram();
 	}
 

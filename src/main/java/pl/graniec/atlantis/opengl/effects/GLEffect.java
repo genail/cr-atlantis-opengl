@@ -35,6 +35,6 @@ import javax.media.opengl.GL;
  *
  */
 public interface GLEffect {
-	void load(GL gl, int sourceTexture);
+	void load(GL gl);
 	void unload(GL gl);
 }

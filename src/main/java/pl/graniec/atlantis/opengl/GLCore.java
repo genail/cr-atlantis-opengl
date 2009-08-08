@@ -31,11 +31,19 @@ package pl.graniec.atlantis.opengl;
 import pl.graniec.atlantis.Core;
 import pl.graniec.atlantis.Window;
 import pl.graniec.atlantis.drawables.FilledRect;
+import pl.graniec.atlantis.drawables.ImageSprite;
+import pl.graniec.atlantis.drawables.Line;
 import pl.graniec.atlantis.effects.ColorDesaturate;
 import pl.graniec.atlantis.effects.ColorInvert;
+import pl.graniec.atlantis.effects.HorizontalBlur;
+import pl.graniec.atlantis.effects.VerticalBlur;
 import pl.graniec.atlantis.opengl.drawables.GLFilledRect;
+import pl.graniec.atlantis.opengl.drawables.GLImageSprite;
+import pl.graniec.atlantis.opengl.drawables.GLLine;
 import pl.graniec.atlantis.opengl.effects.GLColorDesaturate;
 import pl.graniec.atlantis.opengl.effects.GLColorInvert;
+import pl.graniec.atlantis.opengl.effects.GLHorizontalBlur;
+import pl.graniec.atlantis.opengl.effects.GLVerticalBlur;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
@@ -82,5 +90,37 @@ public class GLCore extends Core {
 	@Override
 	public ColorDesaturate newColorDesaturate() {
 		return new GLColorDesaturate();
+	}
+
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.Core#newImageSprite()
+	 */
+	@Override
+	public ImageSprite newImageSprite(String path) {
+		return new GLImageSprite(path);
+	}
+
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.Core#newHorizontalBlur()
+	 */
+	@Override
+	public HorizontalBlur newHorizontalBlur() {
+		return new GLHorizontalBlur();
+	}
+
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.Core#newVerticalBlur()
+	 */
+	@Override
+	public VerticalBlur newVerticalBlur() {
+		return new GLVerticalBlur();
+	}
+
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.Core#newLine()
+	 */
+	@Override
+	public Line newLine() {
+		return new GLLine();
 	}
 }

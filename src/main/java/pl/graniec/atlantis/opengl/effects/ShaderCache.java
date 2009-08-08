@@ -28,25 +28,71 @@
  */
 package pl.graniec.atlantis.opengl.effects;
 
-import javax.media.opengl.GL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
-import pl.graniec.atlantis.effects.ColorDesaturate;
-import pl.graniec.atlantis.opengl.effects.shaders.ColorDesaturateShader;
+import pl.graniec.atlantis.Build;
+import pl.graniec.atlantis.EMessage;
+import pl.graniec.atlantis.opengl.effects.shaders.Shader;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class GLColorDesaturate extends ColorDesaturate implements GLEffect {
-
-	private final GLEffectBasic basic = new GLEffectBasic(ColorDesaturateShader.class);
+public final class ShaderCache {
 	
-	public void load(GL gl) {
-		basic.load(gl);
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(ShaderCache.class.getName());
+	
+	/** This object static instance */
+	private static final ShaderCache instance = new ShaderCache();
+	
+	public static ShaderCache getInstance() {
+		return instance;
 	}
 	
-	public void unload(GL gl) {
-		basic.unload(gl);
+	/** Loaded shaders */
+	private final Map<Class<? extends Shader>, Shader> loadedShaders = new HashMap<Class<? extends Shader>, Shader>();
+	
+	private ShaderCache() {
 	}
-
+	
+	public Shader getShader(Class<? extends Shader> shaderClass) {
+		
+		Shader shader;
+		
+		synchronized (loadedShaders) {
+			shader = loadedShaders.get(shaderClass);
+		}
+		
+		if (shader == null) {
+			shader = load(shaderClass);
+		}
+		
+		return shader;
+	}
+	
+	private Shader load(Class<? extends Shader> clazz) {
+		try {
+			final Shader shader = clazz.newInstance();
+			
+			synchronized (loadedShaders) {
+				loadedShaders.put(clazz, shader);
+			}
+			
+			return shader;
+			
+		} catch (Exception e) {
+			if (Build.DEBUG) {
+				EMessage.prepare("cannot load shader", e);
+			}
+		}
+		
+		return null;
+	}
+	
+	public void preload(Class<? extends Shader> shaderClass) {
+		load(shaderClass);
+	}
 }

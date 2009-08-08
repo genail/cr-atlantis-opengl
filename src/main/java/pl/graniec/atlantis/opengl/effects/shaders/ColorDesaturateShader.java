@@ -26,27 +26,21 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package pl.graniec.atlantis.opengl.effects;
+package pl.graniec.atlantis.opengl.effects.shaders;
 
-import javax.media.opengl.GL;
-
-import pl.graniec.atlantis.effects.ColorDesaturate;
-import pl.graniec.atlantis.opengl.effects.shaders.ColorDesaturateShader;
+import javax.media.opengl.GLContext;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class GLColorDesaturate extends ColorDesaturate implements GLEffect {
+public class ColorDesaturateShader extends Shader {
 
-	private final GLEffectBasic basic = new GLEffectBasic(ColorDesaturateShader.class);
-	
-	public void load(GL gl) {
-		basic.load(gl);
+	/**
+	 * @param context
+	 * @param name
+	 */
+	public ColorDesaturateShader() {
+		super(GLContext.getCurrent().getGL(), "color_desaturate");
 	}
-	
-	public void unload(GL gl) {
-		basic.unload(gl);
-	}
-
 }

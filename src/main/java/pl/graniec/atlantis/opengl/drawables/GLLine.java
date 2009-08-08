@@ -1,11 +1,3 @@
-import pl.graniec.atlantis.Core;
-import pl.graniec.atlantis.Graphics;
-import pl.graniec.atlantis.Scene;
-import pl.graniec.atlantis.Stage;
-import pl.graniec.atlantis.Window;
-import pl.graniec.atlantis.drawables.FilledRect;
-import pl.graniec.atlantis.opengl.GLCore;
-
 /**
  * Copyright (c) 2009, Coral Reef Project
  * All rights reserved.
@@ -34,56 +26,48 @@ import pl.graniec.atlantis.opengl.GLCore;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package pl.graniec.atlantis.opengl.drawables;
+
+import java.util.logging.Logger;
+
+import javax.media.opengl.GL;
+
+import pl.graniec.atlantis.Graphics;
+import pl.graniec.atlantis.drawables.Line;
+import pl.graniec.atlantis.effects.Effect;
+import pl.graniec.atlantis.opengl.GLGraphics;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class TestMain {
+public class GLLine extends Line {
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(GLLine.class.getName());
 	
-	private static class MyScene extends Scene {
-
-		FilledRect rect;
-		
-		/* (non-Javadoc)
-		 * @see pl.graniec.atlantis.Scene#load()
-		 */
-		@Override
-		public void load() {
-			
-			final Core core = Core.getCurrent();
-			
-			final FilledRect fill = core.newFilledRect();
-			fill.setFillColor(0x03000000);
-			add(fill);
-			
-			rect = core.newFilledRect();
-			rect.setFillColor(0xFFFFFFFF);
-			rect.setGeometry(10, 10, 200, 100);
-			
-			rect.x.animate(10, 400, 5000);
-			rect.y.animate(10, 400, 5000);
-			rect.fillColor.animate(0xFFFF0000, 0xFF0000FF, 5000);
-			
-			rect.addEffect(Core.getCurrent().newColorInvert());
-			rect.addEffect(Core.getCurrent().newColorDesaturate());
-			
-			add(rect);
-		}
-		
-	}
-
-	/**
-	 * @param args
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.drawables.Line#draw(pl.graniec.atlantis.Graphics)
 	 */
-	public static void main(String[] args) {
-		final Core core = new GLCore();
-		final Window window = core.newWindow();
-		window.setTitle("Test");
-		window.show();
+	@Override
+	public void draw(Graphics g) {
+		final GLGraphics glg = (GLGraphics) g;
+		final GL gl = glg.getContext();
+		final Effect[] effects = getEffectStack();
 		
-		final Scene scene = new MyScene();
-		Stage.setScene(scene);
+		GLDrawHelper.preDraw(glg, effects);
+		
+		// actual drawing
+		gl.glBegin(GL.GL_LINES);
+		
+		glg.setColor(aColor.get());
+		gl.glVertex2d(aX.get(), aY.get());
+		
+		glg.setColor(bColor.get());
+		gl.glVertex2d(bX.get(), bY.get());
+		
+		gl.glEnd();
+		
+		
+		GLDrawHelper.postDraw(glg, effects);
 	}
-
 }

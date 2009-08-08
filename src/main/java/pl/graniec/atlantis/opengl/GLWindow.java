@@ -43,7 +43,10 @@ import pl.graniec.atlantis.DisplayMode;
 import pl.graniec.atlantis.Graphics;
 import pl.graniec.atlantis.Stage;
 import pl.graniec.atlantis.Window;
-import pl.graniec.atlantis.opengl.effects.Shader;
+import pl.graniec.atlantis.opengl.effects.ShaderCache;
+import pl.graniec.atlantis.opengl.effects.shaders.ColorDesaturateShader;
+import pl.graniec.atlantis.opengl.effects.shaders.ColorInvertShader;
+import pl.graniec.atlantis.opengl.effects.shaders.Shader;
 import sun.misc.Cleaner;
 
 import com.sun.opengl.util.Animator;
@@ -79,7 +82,6 @@ public class GLWindow implements Window {
 	private final GLU glu = new GLU();
 	
 	FrameBuffer fb;
-	Shader shader;
 	
 	
 	public GLWindow() {
@@ -152,8 +154,12 @@ public class GLWindow implements Window {
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 		
+		// preload shaders
+		final ShaderCache shaderCache = ShaderCache.getInstance();
+		shaderCache.preload(ColorInvertShader.class);
+		shaderCache.preload(ColorDesaturateShader.class);
+		
 		fb = new FrameBuffer(gl, canvas.getWidth(), canvas.getHeight());
-		shader = new Shader(gl, "color_invert");
 	}
 
 	private void reshape(GL gl, int x, int y, int width, int height) {

@@ -26,27 +26,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package pl.graniec.atlantis.opengl.effects;
+package pl.graniec.atlantis.opengl.effects.shaders;
 
-import javax.media.opengl.GL;
+import java.util.logging.Logger;
 
-import pl.graniec.atlantis.effects.ColorDesaturate;
-import pl.graniec.atlantis.opengl.effects.shaders.ColorDesaturateShader;
+import javax.media.opengl.GLContext;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class GLColorDesaturate extends ColorDesaturate implements GLEffect {
-
-	private final GLEffectBasic basic = new GLEffectBasic(ColorDesaturateShader.class);
+public class HorizontalBlurShader extends Shader {
 	
-	public void load(GL gl) {
-		basic.load(gl);
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(HorizontalBlurShader.class.getName());
+	
+	/**
+	 * @param context
+	 * @param name
+	 */
+	public HorizontalBlurShader() {
+		super(GLContext.getCurrent().getGL(), "horiz_blur");
 	}
 	
-	public void unload(GL gl) {
-		basic.unload(gl);
-	}
-
 }

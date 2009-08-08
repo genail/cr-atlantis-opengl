@@ -28,25 +28,39 @@
  */
 package pl.graniec.atlantis.opengl.effects;
 
+import java.util.logging.Logger;
+
 import javax.media.opengl.GL;
 
-import pl.graniec.atlantis.effects.ColorDesaturate;
-import pl.graniec.atlantis.opengl.effects.shaders.ColorDesaturateShader;
+import pl.graniec.atlantis.Stage;
+import pl.graniec.atlantis.effects.HorizontalBlur;
+import pl.graniec.atlantis.opengl.effects.shaders.HorizontalBlurShader;
 
 /**
  * @author Piotr Korzuszek <piotr.korzuszek@gmail.com>
  *
  */
-public class GLColorDesaturate extends ColorDesaturate implements GLEffect {
-
-	private final GLEffectBasic basic = new GLEffectBasic(ColorDesaturateShader.class);
+public class GLHorizontalBlur extends HorizontalBlur implements GLEffect {
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(GLHorizontalBlur.class.getName());
 	
+	private GLEffectBasic effectBasic = new GLEffectBasic(HorizontalBlurShader.class);
+
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.opengl.effects.GLEffect#load(javax.media.opengl.GL, int)
+	 */
 	public void load(GL gl) {
-		basic.load(gl);
-	}
-	
-	public void unload(GL gl) {
-		basic.unload(gl);
+		effectBasic.shader.setUniformInt("textureWidth", Stage.getWidth());
+		effectBasic.shader.setUniformInt("textureHeight", Stage.getHeight());
+		effectBasic.shader.setUniformInt("radius", radius.get());
+		
+		effectBasic.load(gl);
 	}
 
+	/* (non-Javadoc)
+	 * @see pl.graniec.atlantis.opengl.effects.GLEffect#unload(javax.media.opengl.GL)
+	 */
+	public void unload(GL gl) {
+		effectBasic.unload(gl);
+	}
 }

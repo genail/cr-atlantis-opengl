@@ -26,12 +26,14 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package pl.graniec.atlantis.opengl.effects;
+package pl.graniec.atlantis.opengl.effects.shaders;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLContext;
@@ -44,7 +46,10 @@ public class Shader {
 	
 	private static final String DEFAULT_SEARCH_PATH = "/shaders";
 	
+	/** The shader program */
 	final int shaderProgram;
+	/** Uniforms name => value */
+	private final Map<String, Object> uniforms = new HashMap<String, Object>();
 	
 	/**
 	 * 
@@ -148,12 +153,28 @@ public class Shader {
 	}
 	
 	public void useProgram() {
-		getGL().glUseProgram(shaderProgram);
+		final GL gl = getGL();
+		gl.glUseProgram(shaderProgram);
+		
+		// set uniforms
+		synchronized (uniforms) {
+			
+			Object value;
+			
+			for (String name : uniforms.keySet()) {
+				value = uniforms.get(name);
+				
+				if (value instanceof Integer) {
+					gl.glUniform1i(gl.glGetUniformLocation(shaderProgram, name), (Integer) value);
+				}
+			}
+		}
 	}
 	
 	public void setUniformInt(String name, int value) {
-		final GL gl  = getGL();
-		gl.glUniform1i(gl.glGetUniformLocation(shaderProgram, name), value);
+		synchronized (uniforms) {
+			uniforms.put(name, value);
+		}
 	}
 	
 	private GL getGL() {
