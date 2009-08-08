@@ -27,6 +27,13 @@
             <version>0.1-SNAPSHOT</version>
         </dependency>
         
+        <!-- Jogl -->
+        <dependency>
+            <groupId>net.java.dev.jogl</groupId>
+            <artifactId>jogl-linux-i586</artifactId>
+            <version>1.1.1-rc6</version>
+        </dependency>
+        
         <!-- JUnit -->
         <dependency>
             <groupId>junit</groupId>
