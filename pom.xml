@@ -34,6 +34,13 @@
             <version>1.1.1-rc6</version>
         </dependency>
         
+        <!-- Gluegen -->
+        <dependency>
+            <groupId>net.java.dev.gluegen</groupId>
+	        <artifactId>gluegen-rt-linux-i586</artifactId>
+            <version>1.0b05</version>
+        </dependency>
+        
         <!-- JUnit -->
         <dependency>
             <groupId>junit</groupId>
@@ -62,7 +69,26 @@
                     <source>1.5</source>
                     <target>1.5</target>
                 </configuration>
-            </plugin> 
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                          <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includes>**/*.so;**/*.dll</includes>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
                 
         </plugins>
     </build>
