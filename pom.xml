@@ -82,7 +82,7 @@
                           <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <includes>**/*.so;**/*.dll</includes>
+                            <includes>**/*.so,**/*.dll</includes>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
                         </configuration>
                     </execution>
